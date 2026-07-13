@@ -128,71 +128,71 @@ export const ServicesSelector: React.FC<ServicesSelectorProps> = ({ services, on
   };
 
   const categories = ['Tax & Company Compliance', 'Payroll & Employee Services', 'Financial & Auditing'] as const;  return (
-    <div className="space-y-4 animate-fade-in">
-      <div className="bg-slate-50 border border-slate-200 border-l-4 border-slate-800 p-3 rounded-r-md">
-        <div className="flex gap-2.5">
-          <Info className="w-4 h-4 text-slate-700 shrink-0 mt-0.5" />
+    <div className="space-y-5 animate-fade-in">
+      <div className="bg-accent-light border border-accent-border border-l-4 border-accent p-4 rounded-r-md">
+        <div className="flex gap-3">
+          <Info className="w-5 h-5 text-accent-dark shrink-0 mt-0.5" />
           <div>
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wide">Custom Service Selections</h4>
-            <p className="text-[11px] text-slate-600 mt-0.5">
+            <h4 className="text-sm font-bold text-brand uppercase tracking-wider">Custom Service Selections</h4>
+            <p className="text-xs text-slate-700 mt-1 leading-relaxed">
               Select the professional services you require. Holdstock &amp; Watson Inc offers full-suite tax, compliance, and accounting services tailored to your unique structure. Review the legal requirements for each selection below.
             </p>
           </div>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         
         {/* Render Services grouped by Category */}
         {categories.map((cat) => {
           const catServices = SERVICES_METADATA.filter(s => s.category === cat);
           return (
-            <div key={cat} className="bg-white rounded-md p-4 border border-slate-200 shadow-xs space-y-3">
-              <div className="flex items-center gap-1.5 border-b border-slate-100 pb-2">
-                <FileText className="w-4 h-4 text-slate-700" />
-                <h3 className="text-xs font-bold tracking-wide text-slate-800 uppercase">{cat}</h3>
+            <div key={cat} className="bg-white rounded-md p-5 border border-slate-200 shadow-xs space-y-4">
+              <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5">
+                <FileText className="w-5 h-5 text-brand" />
+                <h3 className="text-sm font-bold tracking-wide text-brand uppercase">{cat}</h3>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {catServices.map((service) => {
                   const isChecked = !!services[service.key];
                   return (
                     <div
                       key={service.key}
                       onClick={() => handleCheckboxChange(service.key)}
-                      className={`group p-3 rounded-md border transition-all duration-200 cursor-pointer select-none flex flex-col justify-between ${
+                      className={`group p-4 rounded-md border transition-all duration-200 cursor-pointer select-none flex flex-col justify-between ${
                         isChecked
-                          ? 'border-slate-500 bg-slate-50/50 shadow-xs'
-                          : 'border-slate-200 hover:border-slate-400 bg-slate-50/10'
+                          ? 'border-accent bg-accent-light/30 shadow-xs ring-2 ring-accent/5'
+                          : 'border-slate-200 hover:border-accent bg-slate-50/10'
                       }`}
                     >
                       <div>
                         <div className="flex items-start justify-between gap-3">
-                          <span className={`text-xs font-bold leading-snug ${isChecked ? 'text-slate-950 font-extrabold' : 'text-slate-800'}`}>
+                          <span className={`text-sm font-bold leading-snug ${isChecked ? 'text-brand font-extrabold' : 'text-slate-800'}`}>
                             {service.label}
                           </span>
                           <div
-                            className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center shrink-0 transition-all ${
+                            className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-all ${
                               isChecked
-                                ? 'bg-slate-900 border-slate-900 text-white'
-                                : 'border-slate-300 bg-white group-hover:border-slate-400'
+                                ? 'bg-accent border-accent text-white'
+                                : 'border-slate-300 bg-white group-hover:border-accent'
                             }`}
                           >
                             {isChecked && (
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                               </svg>
                             )}
                           </div>
                         </div>
-                        <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                        <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
                           {service.description}
                         </p>
                       </div>
 
-                      <div className="mt-2.5 pt-1.5 border-t border-slate-100 flex gap-1 items-start">
-                        <Info className="w-3 h-3 text-slate-400 shrink-0 mt-0.5" />
-                        <p className="text-[10px] text-slate-400 italic leading-snug">
+                      <div className="mt-3.5 pt-2 border-t border-slate-100 flex gap-1.5 items-start">
+                        <Info className="w-3.5 h-3.5 text-accent-dark/70 shrink-0 mt-0.5" />
+                        <p className="text-[11px] text-slate-500 italic leading-relaxed">
                           {service.hint}
                         </p>
                       </div>
@@ -205,29 +205,29 @@ export const ServicesSelector: React.FC<ServicesSelectorProps> = ({ services, on
         })}
 
         {/* Retainer Package Option */}
-        <div className="bg-white rounded-md p-4 border border-slate-200 shadow-xs space-y-3">
-          <div className="flex items-center gap-1.5 border-b border-slate-100 pb-2">
-            <ShieldCheck className="w-4 h-4 text-slate-700" />
-            <h3 className="text-xs font-bold tracking-wide text-slate-800 uppercase">Retainer Package Option</h3>
+        <div className="bg-white rounded-md p-5 border border-slate-200 shadow-xs space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5">
+            <ShieldCheck className="w-5 h-5 text-brand" />
+            <h3 className="text-sm font-bold tracking-wide text-brand uppercase">Retainer Package Option</h3>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-50 p-3 rounded-md border border-slate-200/50">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-slate-50 p-4 rounded-md border border-slate-200">
             <div>
-              <p className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+              <p className="text-sm font-bold text-slate-800 uppercase tracking-wider">
                 Would you like one or more services covered under a monthly retainer?
               </p>
-              <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+              <p className="text-xs text-slate-600 mt-1 leading-relaxed">
                 Retainers offer priority turnaround and capped monthly billing. Highly recommended for full payroll/bookkeeping suites.
               </p>
             </div>
 
-            <div className="flex gap-1.5 shrink-0">
+            <div className="flex gap-2 shrink-0">
               <button
                 type="button"
                 onClick={() => handleRetainerChange('YES')}
-                className={`px-3.5 py-1.5 text-xs font-bold uppercase rounded-md border tracking-wider transition cursor-pointer ${
+                className={`px-4.5 py-2 text-xs font-bold uppercase rounded-md border tracking-widest transition cursor-pointer ${
                   services.monthlyRetainer === 'YES'
-                    ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
+                    ? 'bg-brand border-brand text-white shadow-sm'
                     : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
                 }`}
               >
@@ -236,9 +236,9 @@ export const ServicesSelector: React.FC<ServicesSelectorProps> = ({ services, on
               <button
                 type="button"
                 onClick={() => handleRetainerChange('NO')}
-                className={`px-3.5 py-1.5 text-xs font-bold uppercase rounded-md border tracking-wider transition cursor-pointer ${
+                className={`px-4.5 py-2 text-xs font-bold uppercase rounded-md border tracking-widest transition cursor-pointer ${
                   services.monthlyRetainer === 'NO'
-                    ? 'bg-slate-700 border-slate-700 text-white shadow-xs'
+                    ? 'bg-accent border-accent text-white shadow-sm'
                     : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
                 }`}
               >
@@ -249,27 +249,27 @@ export const ServicesSelector: React.FC<ServicesSelectorProps> = ({ services, on
         </div>
 
         {/* Legal Acknowledgement Checks */}
-        <div className="bg-slate-100/50 border border-slate-200 rounded-md p-4 space-y-3">
-          <h4 className="text-xs font-bold text-slate-950 uppercase tracking-wide">
+        <div className="bg-accent-light/40 border border-accent-border rounded-md p-5 space-y-4">
+          <h4 className="text-sm font-bold text-brand uppercase tracking-wider">
             Required Acknowledgements &amp; Terms
           </h4>
 
-          <div className="space-y-2.5">
+          <div className="space-y-3.5">
             {/* Box 1 */}
             <div 
               onClick={() => setAcknowledgedGroup1(!acknowledgedGroup1)}
-              className="flex gap-2.5 items-start select-none cursor-pointer group"
+              className="flex gap-3 items-start select-none cursor-pointer group"
             >
-              <div className={`w-4.5 h-4.5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition ${
-                acknowledgedGroup1 ? 'bg-slate-900 border-slate-900 text-white' : 'border-slate-300 bg-white group-hover:border-slate-400'
+              <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition ${
+                acknowledgedGroup1 ? 'bg-brand border-brand text-white' : 'border-slate-300 bg-white group-hover:border-brand/40'
               }`}>
                 {acknowledgedGroup1 && (
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 )}
               </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
+              <p className="text-xs text-slate-700 leading-relaxed">
                 I have read and I understand the requirements for <strong>Entities &amp; Individuals</strong> (Annual Tax, Provisional IRP6 Returns, and Annual Financial Statements). I agree that these selections reflect my direct statutory needs.
               </p>
             </div>
@@ -277,48 +277,48 @@ export const ServicesSelector: React.FC<ServicesSelectorProps> = ({ services, on
             {/* Box 2 */}
             <div 
               onClick={() => setAcknowledgedGroup2(!acknowledgedGroup2)}
-              className="flex gap-2.5 items-start select-none cursor-pointer group"
+              className="flex gap-3 items-start select-none cursor-pointer group"
             >
-              <div className={`w-4.5 h-4.5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition ${
-                acknowledgedGroup2 ? 'bg-slate-900 border-slate-900 text-white' : 'border-slate-300 bg-white group-hover:border-slate-400'
+              <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition ${
+                acknowledgedGroup2 ? 'bg-brand border-brand text-white' : 'border-slate-300 bg-white group-hover:border-brand/40'
               }`}>
                 {acknowledgedGroup2 && (
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 )}
               </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
+              <p className="text-xs text-slate-700 leading-relaxed">
                 I have read and understand the statutory rules regarding <strong>Employees, Payroll, and VAT</strong> (such as EMP201, COIDA, and the R1 million taxable turnover VAT threshold). I recognize that ensuring active, correct selection is my responsibility.
               </p>
             </div>
           </div>
 
           {errorMsg && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-2 text-xs font-bold text-red-800 flex items-center gap-1.5 animate-pulse mt-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-600 shrink-0" />
+            <div className="bg-red-50 border border-red-200 rounded-md p-2.5 text-xs font-bold text-red-800 flex items-center gap-2 animate-pulse mt-1.5">
+              <span className="w-2 h-2 rounded-full bg-red-600 shrink-0 animate-ping" />
               <span>{errorMsg}</span>
             </div>
           )}
         </div>
 
         {/* Action Controls */}
-        <div className="flex justify-between items-center pt-1">
+        <div className="flex justify-between items-center pt-2">
           <button
             type="button"
             onClick={onBack}
-            className="border border-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wider px-4 py-2.5 rounded-md hover:bg-slate-50 transition flex items-center gap-1.5 cursor-pointer"
+            className="border border-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wider px-5 py-3 rounded-md hover:bg-slate-50 transition flex items-center gap-2 cursor-pointer"
           >
-            <ArrowLeft className="w-3.5 h-3.5 text-slate-400" />
+            <ArrowLeft className="w-4 h-4 text-slate-400" />
             <span>Back</span>
           </button>
 
           <button
             type="submit"
-            className="bg-slate-900 text-white font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-md hover:bg-slate-800 transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+            className="bg-brand hover:bg-brand-hover text-white font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-md shadow-xs hover:shadow-md transition duration-150 flex items-center gap-2 cursor-pointer"
           >
             <span>Proceed to Beneficial Owners</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-4 h-4" />
           </button>
         </div>
 

@@ -43,33 +43,34 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
   };
 
   return (
-    <div className="space-y-4 animate-fade-in">
-      <div className="bg-slate-50 border border-slate-200 border-l-4 border-slate-800 p-3 rounded-r-md">
-        <div className="flex gap-2.5">
-          <Sparkles className="w-4 h-4 text-slate-700 shrink-0 mt-0.5" />
+    <div className="space-y-5 animate-fade-in">
+      {/* Informative Header Banner */}
+      <div className="bg-accent-light border border-accent-border border-l-4 border-accent p-4 rounded-r-md">
+        <div className="flex gap-3">
+          <Sparkles className="w-5 h-5 text-accent-dark shrink-0 mt-0.5 animate-pulse" />
           <div>
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wide">Let's Get Started</h4>
-            <p className="text-[11px] text-slate-600 mt-0.5">
+            <h4 className="text-sm font-bold text-brand uppercase tracking-wider">Let's Get Started</h4>
+            <p className="text-xs text-slate-700 mt-1 leading-relaxed">
               Please provide details about your business entity or personal profile. This information is required for statutory registrations and official correspondence.
             </p>
           </div>
         </div>
       </div>
 
-      <form onSubmit={(e) => { e.preventDefault(); onNext(); }} className="space-y-4">
+      <form onSubmit={(e) => { e.preventDefault(); onNext(); }} className="space-y-5">
         
         {/* Section 1: Entity Profile */}
-        <div className="bg-white rounded-md p-4 border border-slate-200 shadow-xs space-y-3">
-          <div className="flex items-center gap-1.5 border-b border-slate-100 pb-2">
-            <Building2 className="w-4 h-4 text-slate-700" />
-            <h3 className="text-xs font-bold tracking-wide text-slate-800 uppercase">1. Entity Structure &amp; Identity</h3>
+        <div className="bg-white rounded-md p-5 border border-slate-200 shadow-xs space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5">
+            <Building2 className="w-5 h-5 text-brand" />
+            <h3 className="text-sm font-bold tracking-wide text-brand uppercase">1. Entity Structure &amp; Identity</h3>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Entity Type */}
             <div>
-              <label htmlFor="entityType" className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                Entity Type <span className="text-slate-500">*</span>
+              <label htmlFor="entityType" className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                Entity Type <span className="text-brand font-semibold">*</span>
               </label>
               <select
                 id="entityType"
@@ -77,7 +78,7 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
                 value={data.entityType}
                 onChange={handleInputChange}
                 required
-                className="w-full bg-slate-50/60 border border-slate-200 text-slate-900 text-xs rounded-md focus:ring-1 focus:ring-slate-500 focus:border-slate-500 p-2 outline-none transition"
+                className="w-full bg-slate-50/40 border border-slate-200 text-slate-900 text-sm rounded-md focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent p-2.5 outline-none transition"
               >
                 {ENTITY_TYPES.map((type) => (
                   <option key={type.value} value={type.value}>
@@ -89,8 +90,8 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
 
             {/* Entity Name */}
             <div>
-              <label htmlFor="entityName" className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                Entity Name / Full Name <span className="text-slate-500">*</span>
+              <label htmlFor="entityName" className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                Entity Name / Full Name <span className="text-brand font-semibold">*</span>
               </label>
               <input
                 type="text"
@@ -100,15 +101,15 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
                 value={data.entityName}
                 onChange={handleInputChange}
                 required
-                className="w-full bg-slate-50/60 border border-slate-200 text-slate-900 text-xs rounded-md focus:ring-1 focus:ring-slate-500 focus:border-slate-500 p-2 outline-none transition placeholder:text-slate-400"
+                className="w-full bg-slate-50/40 border border-slate-200 text-slate-900 text-sm rounded-md focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent p-2.5 outline-none transition placeholder:text-slate-400"
               />
             </div>
 
             {/* Registration Number */}
             {data.entityType !== 'Individual' && (
               <div>
-                <label htmlFor="entityRegistrationNumber" className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  Registration Number <span className="text-slate-400 font-normal text-[9px]">(e.g. 2020/123456/07)</span>
+                <label htmlFor="entityRegistrationNumber" className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Registration Number <span className="text-slate-400 font-normal text-[10px]">(e.g. 2020/123456/07)</span>
                 </label>
                 <input
                   type="text"
@@ -117,15 +118,15 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
                   placeholder="20XX/XXXXXX/XX"
                   value={data.entityRegistrationNumber}
                   onChange={handleInputChange}
-                  className="w-full bg-slate-50/60 border border-slate-200 text-slate-900 text-xs rounded-md focus:ring-1 focus:ring-slate-500 focus:border-slate-500 p-2 outline-none transition placeholder:text-slate-400"
+                  className="w-full bg-slate-50/40 border border-slate-200 text-slate-900 text-sm rounded-md focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent p-2.5 outline-none transition placeholder:text-slate-400"
                 />
               </div>
             )}
 
             {/* Contact Representative */}
             <div>
-              <label htmlFor="contactName" className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                Primary Contact Name <span className="text-slate-500">*</span>
+              <label htmlFor="contactName" className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                Primary Contact Name <span className="text-brand font-semibold">*</span>
               </label>
               <input
                 type="text"
@@ -135,31 +136,31 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
                 value={data.contactName}
                 onChange={handleInputChange}
                 required
-                className="w-full bg-slate-50/60 border border-slate-200 text-slate-900 text-xs rounded-md focus:ring-1 focus:ring-slate-500 focus:border-slate-500 p-2 outline-none transition placeholder:text-slate-400"
+                className="w-full bg-slate-50/40 border border-slate-200 text-slate-900 text-sm rounded-md focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent p-2.5 outline-none transition placeholder:text-slate-400"
               />
             </div>
           </div>
         </div>
 
         {/* Section 2: Statutory Tax Registrations */}
-        <div className="bg-white rounded-md p-4 border border-slate-200 shadow-xs space-y-3">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-            <div className="flex items-center gap-1.5">
-              <Landmark className="w-4 h-4 text-slate-700" />
-              <h3 className="text-xs font-bold tracking-wide text-slate-800 uppercase">2. Statutory Tax Registrations</h3>
+        <div className="bg-white rounded-md p-5 border border-slate-200 shadow-xs space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+            <div className="flex items-center gap-2">
+              <Landmark className="w-5 h-5 text-brand" />
+              <h3 className="text-sm font-bold tracking-wide text-brand uppercase">2. Statutory Tax Registrations</h3>
             </div>
-            <span className="text-[9px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-bold uppercase border border-slate-200/50">
+            <span className="text-[10px] bg-accent-light text-brand px-2 py-0.5 rounded font-bold uppercase border border-accent-border">
               SARS Reference Fields
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Income Tax Number */}
             <div className="relative group">
-              <label htmlFor="incomeTaxNumber" className="flex items-center justify-between text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label htmlFor="incomeTaxNumber" className="flex items-center justify-between text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 <span>Income Tax Number</span>
-                <span className="group-hover:text-slate-900 text-slate-400 cursor-help transition">
-                  <HelpCircle className="w-3.5 h-3.5" />
+                <span className="group-hover:text-brand text-slate-400 cursor-help transition">
+                  <HelpCircle className="w-4 h-4" />
                 </span>
               </label>
               <input
@@ -169,19 +170,19 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
                 placeholder="10-digit tax number"
                 value={data.incomeTaxNumber}
                 onChange={handleInputChange}
-                className="w-full bg-slate-50/60 border border-slate-200 text-slate-900 text-xs rounded-md focus:ring-1 focus:ring-slate-500 focus:border-slate-500 p-2 outline-none transition placeholder:text-slate-400"
+                className="w-full bg-slate-50/40 border border-slate-200 text-slate-900 text-sm rounded-md focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent p-2.5 outline-none transition placeholder:text-slate-400"
               />
-              <p className="absolute hidden group-hover:block bg-slate-950 text-white text-[10px] rounded p-1.5 shadow-md mt-1 w-56 z-20 left-0 leading-normal">
+              <p className="absolute hidden group-hover:block bg-brand text-white text-xs rounded-md p-2 shadow-lg mt-1 w-64 z-20 left-0 leading-relaxed">
                 Your company or personal SARS tax reference number. This is required for annual filing submissions.
               </p>
             </div>
 
             {/* VAT Number */}
             <div className="relative group">
-              <label htmlFor="vatNumber" className="flex items-center justify-between text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label htmlFor="vatNumber" className="flex items-center justify-between text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 <span>VAT Number</span>
-                <span className="group-hover:text-slate-900 text-slate-400 cursor-help transition">
-                  <HelpCircle className="w-3.5 h-3.5" />
+                <span className="group-hover:text-brand text-slate-400 cursor-help transition">
+                  <HelpCircle className="w-4 h-4" />
                 </span>
               </label>
               <input
@@ -191,19 +192,19 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
                 placeholder="4XXXXXXXXX"
                 value={data.vatNumber}
                 onChange={handleInputChange}
-                className="w-full bg-slate-50/60 border border-slate-200 text-slate-900 text-xs rounded-md focus:ring-1 focus:ring-slate-500 focus:border-slate-500 p-2 outline-none transition placeholder:text-slate-400"
+                className="w-full bg-slate-50/40 border border-slate-200 text-slate-900 text-sm rounded-md focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent p-2.5 outline-none transition placeholder:text-slate-400"
               />
-              <p className="absolute hidden group-hover:block bg-slate-950 text-white text-[10px] rounded p-1.5 shadow-md mt-1 w-56 z-20 left-0 leading-normal">
+              <p className="absolute hidden group-hover:block bg-brand text-white text-xs rounded-md p-2 shadow-lg mt-1 w-64 z-20 left-0 leading-relaxed">
                 Required if your taxable turnover exceeds R1 million or if you have registered voluntarily.
               </p>
             </div>
 
             {/* PAYE Number */}
             <div className="relative group">
-              <label htmlFor="payeNumber" className="flex items-center justify-between text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label htmlFor="payeNumber" className="flex items-center justify-between text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 <span>PAYE Number</span>
-                <span className="group-hover:text-slate-900 text-slate-400 cursor-help transition">
-                  <HelpCircle className="w-3.5 h-3.5" />
+                <span className="group-hover:text-brand text-slate-400 cursor-help transition">
+                  <HelpCircle className="w-4 h-4" />
                 </span>
               </label>
               <input
@@ -213,19 +214,19 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
                 placeholder="7XXXXXXXXX"
                 value={data.payeNumber}
                 onChange={handleInputChange}
-                className="w-full bg-slate-50/60 border border-slate-200 text-slate-900 text-xs rounded-md focus:ring-1 focus:ring-slate-500 focus:border-slate-500 p-2 outline-none transition placeholder:text-slate-400"
+                className="w-full bg-slate-50/40 border border-slate-200 text-slate-900 text-sm rounded-md focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent p-2.5 outline-none transition placeholder:text-slate-400"
               />
-              <p className="absolute hidden group-hover:block bg-slate-950 text-white text-[10px] rounded p-1.5 shadow-md mt-1 w-56 z-20 left-0 leading-normal">
+              <p className="absolute hidden group-hover:block bg-brand text-white text-xs rounded-md p-2 shadow-lg mt-1 w-64 z-20 left-0 leading-relaxed">
                 Pay-As-You-Earn reference. Required if employees are liable for income tax deductions.
               </p>
             </div>
 
             {/* UIF Number */}
             <div className="relative group">
-              <label htmlFor="uifNumber" className="flex items-center justify-between text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label htmlFor="uifNumber" className="flex items-center justify-between text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 <span>UIF Number</span>
-                <span className="group-hover:text-slate-900 text-slate-400 cursor-help transition">
-                  <HelpCircle className="w-3.5 h-3.5" />
+                <span className="group-hover:text-brand text-slate-400 cursor-help transition">
+                  <HelpCircle className="w-4 h-4" />
                 </span>
               </label>
               <input
@@ -235,19 +236,19 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
                 placeholder="UXXXXXXXXX"
                 value={data.uifNumber}
                 onChange={handleInputChange}
-                className="w-full bg-slate-50/60 border border-slate-200 text-slate-900 text-xs rounded-md focus:ring-1 focus:ring-slate-500 focus:border-slate-500 p-2 outline-none transition placeholder:text-slate-400"
+                className="w-full bg-slate-50/40 border border-slate-200 text-slate-900 text-sm rounded-md focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent p-2.5 outline-none transition placeholder:text-slate-400"
               />
-              <p className="absolute hidden group-hover:block bg-slate-950 text-white text-[10px] rounded p-1.5 shadow-md mt-1 w-56 z-20 left-0 leading-normal">
+              <p className="absolute hidden group-hover:block bg-brand text-white text-xs rounded-md p-2 shadow-lg mt-1 w-64 z-20 left-0 leading-relaxed">
                 Unemployment Insurance Fund number. Needed if employees work more than 24 hours per month.
               </p>
             </div>
 
             {/* SDL Number */}
             <div className="relative group">
-              <label htmlFor="sdlNumber" className="flex items-center justify-between text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label htmlFor="sdlNumber" className="flex items-center justify-between text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 <span>SDL Number</span>
-                <span className="group-hover:text-slate-900 text-slate-400 cursor-help transition">
-                  <HelpCircle className="w-3.5 h-3.5" />
+                <span className="group-hover:text-brand text-slate-400 cursor-help transition">
+                  <HelpCircle className="w-4 h-4" />
                 </span>
               </label>
               <input
@@ -257,17 +258,17 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
                 placeholder="LXXXXXXXXX"
                 value={data.sdlNumber}
                 onChange={handleInputChange}
-                className="w-full bg-slate-50/60 border border-slate-200 text-slate-900 text-xs rounded-md focus:ring-1 focus:ring-slate-500 focus:border-slate-500 p-2 outline-none transition placeholder:text-slate-400"
+                className="w-full bg-slate-50/40 border border-slate-200 text-slate-900 text-sm rounded-md focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent p-2.5 outline-none transition placeholder:text-slate-400"
               />
-              <p className="absolute hidden group-hover:block bg-slate-950 text-white text-[10px] rounded p-1.5 shadow-md mt-1 w-56 z-20 left-0 leading-normal">
+              <p className="absolute hidden group-hover:block bg-brand text-white text-xs rounded-md p-2 shadow-lg mt-1 w-64 z-20 left-0 leading-relaxed">
                 Skills Development Levy. Needed if total payroll exceeds R500,000 per annum.
               </p>
             </div>
 
             {/* Financial Year End */}
             <div>
-              <label htmlFor="financialYearEnd" className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                Financial Year End <span className="text-slate-500">*</span>
+              <label htmlFor="financialYearEnd" className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                Financial Year End <span className="text-brand font-semibold">*</span>
               </label>
               <input
                 type="text"
@@ -277,24 +278,24 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
                 value={data.financialYearEnd}
                 onChange={handleInputChange}
                 required
-                className="w-full bg-slate-50/60 border border-slate-200 text-slate-900 text-xs rounded-md focus:ring-1 focus:ring-slate-500 focus:border-slate-500 p-2 outline-none transition placeholder:text-slate-400"
+                className="w-full bg-slate-50/40 border border-slate-200 text-slate-900 text-sm rounded-md focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent p-2.5 outline-none transition placeholder:text-slate-400"
               />
             </div>
           </div>
         </div>
 
         {/* Section 3: Communication & Location */}
-        <div className="bg-white rounded-md p-4 border border-slate-200 shadow-xs space-y-3">
-          <div className="flex items-center gap-1.5 border-b border-slate-100 pb-2">
-            <Mail className="w-4 h-4 text-slate-700" />
-            <h3 className="text-xs font-bold tracking-wide text-slate-800 uppercase">3. Contact &amp; Correspondence</h3>
+        <div className="bg-white rounded-md p-5 border border-slate-200 shadow-xs space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5">
+            <Mail className="w-5 h-5 text-brand" />
+            <h3 className="text-sm font-bold tracking-wide text-brand uppercase">3. Contact &amp; Correspondence</h3>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Email Address */}
             <div>
-              <label htmlFor="emailAddress" className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                Email Address <span className="text-slate-500">*</span>
+              <label htmlFor="emailAddress" className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                Email Address <span className="text-brand font-semibold">*</span>
               </label>
               <div className="relative">
                 <input
@@ -305,16 +306,16 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
                   value={data.emailAddress}
                   onChange={handleInputChange}
                   required
-                  className="w-full bg-slate-50/60 border border-slate-200 text-slate-900 text-xs rounded-md focus:ring-1 focus:ring-slate-500 focus:border-slate-500 pl-8 p-2 outline-none transition placeholder:text-slate-400"
+                  className="w-full bg-slate-50/40 border border-slate-200 text-slate-900 text-sm rounded-md focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent pl-9 p-2.5 outline-none transition placeholder:text-slate-400"
                 />
-                <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
               </div>
             </div>
 
             {/* Cellphone Number */}
             <div>
-              <label htmlFor="cellphoneNumber" className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                Cellphone Number <span className="text-slate-500">*</span>
+              <label htmlFor="cellphoneNumber" className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                Cellphone Number <span className="text-brand font-semibold">*</span>
               </label>
               <div className="relative">
                 <input
@@ -325,15 +326,15 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
                   value={data.cellphoneNumber}
                   onChange={handleInputChange}
                   required
-                  className="w-full bg-slate-50/60 border border-slate-200 text-slate-900 text-xs rounded-md focus:ring-1 focus:ring-slate-500 focus:border-slate-500 pl-8 p-2 outline-none transition placeholder:text-slate-400"
+                  className="w-full bg-slate-50/40 border border-slate-200 text-slate-900 text-sm rounded-md focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent pl-9 p-2.5 outline-none transition placeholder:text-slate-400"
                 />
-                <Phone className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+                <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
               </div>
             </div>
 
             {/* Telephone Number */}
             <div>
-              <label htmlFor="telephoneNumber" className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label htmlFor="telephoneNumber" className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 Landline Number
               </label>
               <div className="relative">
@@ -344,15 +345,15 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
                   placeholder="031 123 4567"
                   value={data.telephoneNumber}
                   onChange={handleInputChange}
-                  className="w-full bg-slate-50/60 border border-slate-200 text-slate-900 text-xs rounded-md focus:ring-1 focus:ring-slate-500 focus:border-slate-500 pl-8 p-2 outline-none transition placeholder:text-slate-400"
+                  className="w-full bg-slate-50/40 border border-slate-200 text-slate-900 text-sm rounded-md focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent pl-9 p-2.5 outline-none transition placeholder:text-slate-400"
                 />
-                <Phone className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+                <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
               </div>
             </div>
 
             {/* Referred By */}
             <div className="md:col-span-2 lg:col-span-3">
-              <label htmlFor="referredBy" className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+              <label htmlFor="referredBy" className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 Referred By
               </label>
               <input
@@ -362,17 +363,17 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
                 placeholder="How did you hear about Holdstock &amp; Watson?"
                 value={data.referredBy}
                 onChange={handleInputChange}
-                className="w-full bg-slate-50/60 border border-slate-200 text-slate-900 text-xs rounded-md focus:ring-1 focus:ring-slate-500 focus:border-slate-500 p-2 outline-none transition placeholder:text-slate-400"
+                className="w-full bg-slate-50/40 border border-slate-200 text-slate-900 text-sm rounded-md focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent p-2.5 outline-none transition placeholder:text-slate-400"
               />
             </div>
           </div>
 
           {/* Addresses */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
             <div>
-              <label htmlFor="registeredAddress" className="flex items-center gap-1 text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                <MapPin className="w-3 h-3 text-slate-500" />
-                <span>Registered Address <span className="text-slate-500">*</span></span>
+              <label htmlFor="registeredAddress" className="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <MapPin className="w-4 h-4 text-slate-500" />
+                <span>Registered Address <span className="text-brand font-semibold">*</span></span>
               </label>
               <textarea
                 id="registeredAddress"
@@ -382,26 +383,26 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
                 value={data.registeredAddress}
                 onChange={handleRegisteredAddressChange}
                 required
-                className="w-full bg-slate-50/60 border border-slate-200 text-slate-900 text-xs rounded-md focus:ring-1 focus:ring-slate-500 focus:border-slate-500 p-2 outline-none transition resize-none placeholder:text-slate-400"
+                className="w-full bg-slate-50/40 border border-slate-200 text-slate-900 text-sm rounded-md focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent p-2.5 outline-none transition resize-none placeholder:text-slate-400 font-sans"
               />
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label htmlFor="postalAddress" className="flex items-center gap-1 text-[10px] font-bold text-slate-700 uppercase tracking-wider">
-                  <MapPin className="w-3 h-3 text-slate-500" />
-                  <span>Postal Address <span className="text-slate-500">*</span></span>
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="postalAddress" className="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                  <MapPin className="w-4 h-4 text-slate-500" />
+                  <span>Postal Address <span className="text-brand font-semibold">*</span></span>
                 </label>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   <input
                     type="checkbox"
                     id="sameAsRegistered"
                     name="sameAsRegistered"
                     checked={data.sameAsRegistered}
                     onChange={handleInputChange}
-                    className="rounded border-slate-300 text-slate-800 focus:ring-slate-500 h-3 w-3"
+                    className="rounded border-slate-350 text-brand focus:ring-accent h-3.5 w-3.5 cursor-pointer"
                   />
-                  <label htmlFor="sameAsRegistered" className="text-[10px] text-slate-600 font-bold cursor-pointer select-none">
+                  <label htmlFor="sameAsRegistered" className="text-[11px] text-slate-600 font-bold cursor-pointer select-none">
                     Same as Physical
                   </label>
                 </div>
@@ -415,10 +416,10 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
                 value={data.postalAddress}
                 onChange={handleInputChange}
                 required
-                className={`w-full border text-xs rounded-md p-2 outline-none transition resize-none ${
+                className={`w-full border text-sm rounded-md p-2.5 outline-none transition resize-none font-sans ${
                   data.sameAsRegistered 
                     ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed' 
-                    : 'bg-slate-50/60 border-slate-200 text-slate-900 focus:ring-1 focus:ring-slate-500 focus:border-slate-500 placeholder:text-slate-400'
+                    : 'bg-slate-50/40 border-slate-200 text-slate-900 focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent placeholder:text-slate-400'
                 }`}
               />
             </div>
@@ -426,13 +427,13 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-end pt-1">
+        <div className="flex justify-end pt-2">
           <button
             type="submit"
-            className="bg-slate-900 text-white font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-md hover:bg-slate-800 focus:ring-2 focus:ring-slate-200 transition duration-150 cursor-pointer shadow-xs flex items-center gap-1.5"
+            className="bg-brand hover:bg-brand-hover text-white font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-md shadow-xs hover:shadow-md transition duration-150 cursor-pointer flex items-center gap-2"
           >
             <span>Proceed to Services</span>
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </button>
