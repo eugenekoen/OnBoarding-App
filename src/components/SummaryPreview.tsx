@@ -1,6 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { OnboardingFormState } from '../types';
-import { ArrowLeft, Check, Download, Landmark, Printer, ShieldAlert, Sparkles, UserCheck } from 'lucide-react';
+import { ArrowLeft, Check, Download, Landmark, Printer, ShieldAlert, Sparkles, UserCheck, Mail, LogOut, Lock } from 'lucide-react';
+import { initAuth, googleSignIn, logout, sendOnboardingEmail } from '../lib/firebaseAuth';
+import { User } from 'firebase/auth';
 
 interface SummaryPreviewProps {
   state: OnboardingFormState;
@@ -14,12 +16,59 @@ export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, o
   const [typedSignature, setTypedSignature] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = initAuth(
+      (currentUser, accessToken) => {
+        setUser(currentUser);
+        setToken(accessToken);
+      },
+      () => {
+        setUser(null);
+        setToken(null);
+      }
+    );
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, []);
+
+  const handleGoogleSignIn = async () => {
+    setIsLoggingIn(true);
+    setErrorMsg('');
+    try {
+      const result = await googleSignIn();
+      if (result) {
+        setUser(result.user);
+        setToken(result.accessToken);
+      }
+    } catch (err: any) {
+      console.error(err);
+      setErrorMsg('Google authentication failed: ' + (err.message || err));
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  const handleGoogleLogout = async () => {
+    try {
+      await logout();
+      setUser(null);
+      setToken(null);
+    } catch (err: any) {
+      console.error(err);
+    }
+  };
   
   const handlePrint = () => {
     window.print();
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!signatureName.trim()) {
       setErrorMsg('Please enter your full name in the authorized sign-off box.');
@@ -29,16 +78,32 @@ export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, o
       setErrorMsg('Please review and tick the Privacy Policy & Data Processing consent checkbox.');
       return;
     }
+    if (!token) {
+      setErrorMsg('Please authorize Gmail by signing in with Google below before submitting.');
+      return;
+    }
 
     setErrorMsg('');
     setIsSubmitting(true);
 
-    // Simulate elite submission sequence with realistic intervals
-    setTimeout(() => {
-      const generatedRef = `HW-INT-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
+    const generatedRef = `HW-INT-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    try {
+      // Real email transmission via Google Workspace Gmail API
+      await sendOnboardingEmail(token, state, generatedRef);
+      
+      // Update state signatures to keep final transcript in sync
+      state.signatures.clientName = signatureName;
+      state.signatures.date = new Date().toLocaleDateString('en-ZA');
+      state.signatures.acknowledgedTerms = agreedToPrivacy;
+
       setIsSubmitting(false);
       onSubmitComplete(generatedRef);
-    }, 2800);
+    } catch (err: any) {
+      console.error(err);
+      setIsSubmitting(false);
+      setErrorMsg('Failed to transmit onboarding email via Gmail: ' + (err.message || 'Unknown network error') + '. Please try reconnecting Google.');
+    }
   };
 
   const getServiceList = () => {
@@ -314,6 +379,69 @@ export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, o
           </p>
         </div>
 
+        {/* Section 5: Secure Gmail Sender Configuration */}
+        <div className="border-t border-slate-200 pt-5 space-y-3.5">
+          <h3 className="text-xs font-bold text-brand uppercase tracking-wider border-l-2 border-accent pl-2 flex items-center gap-2">
+            <Lock className="w-4 h-4 text-accent" />
+            5. Secure Gmail Email Dispatcher
+          </h3>
+          <p className="text-xs text-slate-650 leading-relaxed">
+            To ensure secure, verifiable email transmission of this completed onboarding form, this portal sends the final PDF-quality dossier directly from <strong>your personal Gmail account</strong> to both yourself (<strong className="text-brand">{state.clientInfo.emailAddress || 'Not entered'}</strong>) and Holdstock &amp; Watson Inc (<strong className="text-brand font-bold">onboarding@holdstock.co.za</strong>).
+          </p>
+          
+          <div className="bg-slate-50 border border-slate-200 p-4 rounded-md">
+            {!token ? (
+              <div className="space-y-3.5">
+                <div className="flex items-start gap-2.5 text-xs text-slate-500 font-medium">
+                  <Mail className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                  <span>Connect your Gmail account to enable automatic and secure direct mailing of the onboarding form.</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleGoogleSignIn}
+                  disabled={isLoggingIn}
+                  className="flex items-center gap-3 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-medium text-xs uppercase tracking-wider px-4 py-2.5 rounded-md shadow-xs transition duration-200 cursor-pointer disabled:opacity-50"
+                >
+                  <svg className="w-5 h-5 shrink-0" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                  </svg>
+                  <span className="font-bold">{isLoggingIn ? 'Connecting to Google...' : 'Sign in with Google'}</span>
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-3">
+                  {user?.photoURL ? (
+                    <img src={user.photoURL} alt="Google Profile" referrerPolicy="no-referrer" className="w-10 h-10 rounded-full border border-emerald-300" />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">
+                      {user?.email?.[0].toUpperCase()}
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse inline-block" />
+                      Authenticated via Gmail
+                    </p>
+                    <p className="text-sm font-extrabold text-slate-900">{user?.email}</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleGoogleLogout}
+                  className="text-slate-650 hover:text-slate-900 text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1.5 bg-white hover:bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-md transition cursor-pointer shrink-0"
+                >
+                  <LogOut className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Disconnect</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Signature Line Area */}
         <div className="border-t border-slate-200 pt-5 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -393,10 +521,12 @@ export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, o
         <button
           type="button"
           onClick={handleSubmit}
-          disabled={isSubmitting}
+          disabled={isSubmitting || !token}
           className={`font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-md flex items-center gap-2 transition cursor-pointer shadow-xs ${
             isSubmitting
               ? 'bg-slate-400 text-white cursor-not-allowed'
+              : !token
+              ? 'bg-slate-300 text-slate-500 cursor-not-allowed border border-slate-200'
               : 'bg-brand hover:bg-brand-hover text-white'
           }`}
         >
