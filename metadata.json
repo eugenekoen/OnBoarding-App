@@ -1,0 +1,6 @@
+{
+  "name": "Holdstock & Watson Intake Portal",
+  "description": "An interactive, premium client onboarding and tax registration platform for Holdstock & Watson Inc (incorporating KH Financial Services). Easily declare entity details, required accounting services, and manage comprehensive beneficial ownership registers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
