@@ -16,7 +16,7 @@ async function startServer() {
   app.use(express.json({ limit: "10mb" }));
 
   // API Endpoint for Form Submission and Emailing
-  app.post("/api/submit-onboarding", async (req, res) => {
+  app.post(["/api/submit-onboarding", "/OnBoarding-App/api/submit-onboarding"], async (req, res) => {
     try {
       const { state, referenceNo } = req.body;
 

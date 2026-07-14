@@ -36,8 +36,8 @@ export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, o
     const generatedRef = `HW-INT-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
 
     try {
-      // Send form data to the Express backend endpoint
-      const response = await fetch('/api/submit-onboarding', {
+      // Send form data to the Express backend endpoint (using relative path to respect /OnBoarding-App/ base path)
+      const response = await fetch('api/submit-onboarding', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
