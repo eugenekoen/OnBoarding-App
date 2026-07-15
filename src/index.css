@@ -21,3 +21,17 @@
   }
 }
 
+@media print {
+  @page {
+    size: A4;
+    margin-top: 0.5in;
+    margin-bottom: 0.1in;
+    margin-left: 0in;
+    margin-right: 0in;
+  }
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
