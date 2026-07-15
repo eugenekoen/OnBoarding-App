@@ -12,19 +12,12 @@ interface SummaryPreviewProps {
   onSubmitComplete: (referenceNo: string) => void;
 }
 
-// Pure mathematical OKLCH to RGB conversion
-function oklchToRgb(l: number, c: number, h: number, alpha: number = 1): string {
-  // Convert Hue to radians
-  const hRad = (h * Math.PI) / 180;
-  
-  // OKLCH to OKLAB
-  const aLab = c * Math.cos(hRad);
-  const bLab = c * Math.sin(hRad);
-  
+// Pure mathematical OKLAB to RGB conversion
+function oklabToRgb(l: number, a: number, bParam: number, alpha: number = 1): string {
   // OKLAB to LMS
-  const l_ = l + 0.3963377774 * aLab + 0.2158037573 * bLab;
-  const m_ = l - 0.1055613458 * aLab - 0.0638541728 * bLab;
-  const s_ = l - 0.0894841775 * aLab - 1.2914855480 * bLab;
+  const l_ = l + 0.3963377774 * a + 0.2158037573 * bParam;
+  const m_ = l - 0.1055613458 * a - 0.0638541728 * bParam;
+  const s_ = l - 0.0894841775 * a - 1.2914855480 * bParam;
   
   // LMS non-linear to linear
   const lLinear = l_ * l_ * l_;
@@ -51,6 +44,18 @@ function oklchToRgb(l: number, c: number, h: number, alpha: number = 1): string 
   } else {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   }
+}
+
+// Pure mathematical OKLCH to RGB conversion
+function oklchToRgb(l: number, c: number, h: number, alpha: number = 1): string {
+  // Convert Hue to radians
+  const hRad = (h * Math.PI) / 180;
+  
+  // OKLCH to OKLAB
+  const aLab = c * Math.cos(hRad);
+  const bLab = c * Math.sin(hRad);
+  
+  return oklabToRgb(l, aLab, bLab, alpha);
 }
 
 // Robust regex parser for oklch colors
@@ -89,9 +94,37 @@ function parseOklch(str: string): string {
   }
 }
 
+// Robust regex parser for oklab colors
+function parseOklab(str: string): string {
+  const regex = /oklab\(\s*([\d.]+%?)\s+([-+]?[\d.]+%?)\s+([-+]?[\d.]+%?)\s*(?:\/\s*([\d.]+%?))?\s*\)/i;
+  const match = str.match(regex);
+  if (!match) return str;
+
+  try {
+    const lStr = match[1];
+    const aStr = match[2];
+    const bStr = match[3];
+    const alphaStr = match[4];
+
+    const l = lStr.endsWith('%') ? parseFloat(lStr) / 100 : parseFloat(lStr);
+    const a = aStr.endsWith('%') ? (parseFloat(aStr) / 100) * 0.4 : parseFloat(aStr);
+    const b = bStr.endsWith('%') ? (parseFloat(bStr) / 100) * 0.4 : parseFloat(bStr);
+
+    let alpha = 1;
+    if (alphaStr) {
+      alpha = alphaStr.endsWith('%') ? parseFloat(alphaStr) / 100 : parseFloat(alphaStr);
+    }
+
+    return oklabToRgb(l, a, b, alpha);
+  } catch (err) {
+    console.warn('Failed to parse oklab color values:', str, err);
+    return 'rgba(0, 0, 0, 0)';
+  }
+}
+
 const colorConversionCache = new Map<string, string>();
 
-const convertOklchToRgb = (colorStr: string): string => {
+const convertColorToRgb = (colorStr: string): string => {
   if (colorConversionCache.has(colorStr)) {
     return colorConversionCache.get(colorStr)!;
   }
@@ -113,7 +146,7 @@ const convertOklchToRgb = (colorStr: string): string => {
     tempEl.style.color = colorStr;
     const computedColor = window.getComputedStyle(tempEl).color;
     
-    if (computedColor && !computedColor.includes('oklch')) {
+    if (computedColor && !computedColor.includes('oklch') && !computedColor.includes('oklab')) {
       colorConversionCache.set(colorStr, computedColor);
       return computedColor;
     }
@@ -121,18 +154,33 @@ const convertOklchToRgb = (colorStr: string): string => {
     // Non-blocking
   }
 
-  const result = parseOklch(colorStr);
+  let result = colorStr;
+  if (colorStr.toLowerCase().includes('oklch')) {
+    result = parseOklch(colorStr);
+  } else if (colorStr.toLowerCase().includes('oklab')) {
+    result = parseOklab(colorStr);
+  }
+  
   colorConversionCache.set(colorStr, result);
   return result;
 };
 
-const convertOklchInString = (str: string): string => {
-  if (!str || typeof str !== 'string' || !str.includes('oklch')) {
+const convertColorsInString = (str: string): string => {
+  if (!str || typeof str !== 'string') {
     return str;
   }
-  return str.replace(/oklch\([^)]+\)/gi, (match) => {
-    return convertOklchToRgb(match);
-  });
+  let parsedStr = str;
+  if (parsedStr.includes('oklch')) {
+    parsedStr = parsedStr.replace(/oklch\([^)]+\)/gi, (match) => {
+      return convertColorToRgb(match);
+    });
+  }
+  if (parsedStr.includes('oklab')) {
+    parsedStr = parsedStr.replace(/oklab\([^)]+\)/gi, (match) => {
+      return convertColorToRgb(match);
+    });
+  }
+  return parsedStr;
 };
 
 export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, onSubmitComplete }) => {
@@ -169,15 +217,15 @@ export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, o
           get(target, prop) {
             const val = Reflect.get(target, prop);
             
-            if (typeof val === 'string' && val.includes('oklch')) {
-              return convertOklchInString(val);
+            if (typeof val === 'string' && (val.includes('oklch') || val.includes('oklab'))) {
+              return convertColorsInString(val);
             }
             
             if (typeof val === 'function') {
               return function(...args: any[]) {
                 const res = val.apply(target, args);
-                if (typeof res === 'string' && res.includes('oklch')) {
-                  return convertOklchInString(res);
+                if (typeof res === 'string' && (res.includes('oklch') || res.includes('oklab'))) {
+                  return convertColorsInString(res);
                 }
                 return res;
               };
