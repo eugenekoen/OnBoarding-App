@@ -86,6 +86,15 @@ export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, o
 
         console.log('Supabase submission and Edge Function email transmission completed successfully!');
       } else {
+        // If on GitHub Pages and Supabase keys are missing, fail gracefully with clear instructions instead of a 405
+        if (window.location.hostname.endsWith('github.io')) {
+          throw new Error(
+            "Supabase credentials are not configured in your GitHub Pages deployment. " +
+            "Since GitHub Pages is a purely static host, there is no backend server to process 'api/submit-onboarding' (which leads to a 405 error). " +
+            "To resolve this, you must configure your Supabase variables: go to your GitHub repository Settings -> Secrets and Variables -> Actions, add 'VITE_SUPABASE_URL' and 'VITE_SUPABASE_ANON_KEY', and redeploy your project."
+          );
+        }
+
         // Fallback to Express local backend (perfect for previewing inside AI Studio before you configure your own Supabase)
         console.log('No custom Supabase keys detected. Falling back to local Express backend server...');
         const response = await fetch('api/submit-onboarding', {
