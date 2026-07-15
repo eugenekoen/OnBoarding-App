@@ -1,6 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { OnboardingFormState } from '../types';
 import { ArrowLeft, Check, Download, Landmark, Printer, ShieldAlert, Sparkles, UserCheck, Mail, Lock } from 'lucide-react';
+import { supabase } from '../lib/supabaseClient';
+import { generateEmailHtml } from '../lib/emailTemplate';
 
 interface SummaryPreviewProps {
   state: OnboardingFormState;
@@ -34,23 +36,73 @@ export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, o
     setIsSubmitting(true);
 
     const generatedRef = `HW-INT-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
+    const entityName = state.clientInfo.entityName || "New Entity";
+    const subject = `Holdstock & Watson Client Onboarding [REF: ${generatedRef}] - ${entityName}`;
 
     try {
-      // Send form data to the Express backend endpoint (using relative path to respect /OnBoarding-App/ base path)
-      const response = await fetch('api/submit-onboarding', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ state, referenceNo: generatedRef }),
-      });
+      // Check if Supabase credentials are configured in the environment variables
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      const useSupabase = supabaseUrl && 
+                          supabaseUrl !== "https://your-project-id.supabase.co" && 
+                          supabaseUrl.trim() !== "" &&
+                          supabaseAnonKey && 
+                          supabaseAnonKey.trim() !== "";
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Server responded with ${response.status}`);
+      if (useSupabase) {
+        console.log('Supabase credentials detected! Initiating direct database write & Edge Function call...');
+        
+        // 1. Save the onboarding application data directly into the Supabase database
+        const { error: dbError } = await supabase
+          .from('submissions')
+          .insert({
+            reference_no: generatedRef,
+            entity_name: state.clientInfo.entityName || "New Entity",
+            client_email: state.clientInfo.emailAddress,
+            form_data: state,
+            created_at: new Date().toISOString()
+          });
+
+        if (dbError) {
+          console.error('Supabase DB Insert Error:', dbError);
+          throw new Error(`Failed to save record to Supabase table 'submissions': ${dbError.message}. Make sure you have created the table in your Supabase SQL Editor.`);
+        }
+
+        console.log('Record stored in Supabase database! Triggering email transmission via Supabase Edge Function...');
+
+        // 2. Invoke the Supabase Edge Function to send the email via Resend securely
+        const { data: funcData, error: funcError } = await supabase.functions.invoke('send-onboarding-email', {
+          body: {
+            to: state.clientInfo.emailAddress,
+            subject: subject,
+            html: generateEmailHtml(state, generatedRef)
+          },
+        });
+
+        if (funcError) {
+          console.error('Supabase Edge Function Error:', funcError);
+          throw new Error(`Failed to trigger email function 'send-onboarding-email': ${funcError.message}. Check that your Edge Function is deployed and has the RESEND_API_KEY set.`);
+        }
+
+        console.log('Supabase submission and Edge Function email transmission completed successfully!');
+      } else {
+        // Fallback to Express local backend (perfect for previewing inside AI Studio before you configure your own Supabase)
+        console.log('No custom Supabase keys detected. Falling back to local Express backend server...');
+        const response = await fetch('api/submit-onboarding', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ state, referenceNo: generatedRef }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || `Server responded with ${response.status}`);
+        }
+
+        const resData = await response.json();
       }
-
-      const resData = await response.json();
 
       // Update state signatures to keep final transcript in sync
       state.signatures.clientName = signatureName;
@@ -62,7 +114,7 @@ export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, o
     } catch (err: any) {
       console.error(err);
       setIsSubmitting(false);
-      setErrorMsg('Failed to transmit onboarding email: ' + (err.message || 'Unknown network error'));
+      setErrorMsg('Failed to complete onboarding submission: ' + (err.message || 'Unknown network error'));
     }
   };
 
