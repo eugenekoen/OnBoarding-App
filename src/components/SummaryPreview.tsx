@@ -1,8 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { OnboardingFormState } from '../types';
 import { ArrowLeft, Check, Download, Landmark, Printer, ShieldAlert, Sparkles, UserCheck, Mail, Lock } from 'lucide-react';
-import { supabase } from '../lib/supabaseClient';
-import { generateEmailHtml } from '../lib/emailTemplate';
 
 interface SummaryPreviewProps {
   state: OnboardingFormState;
@@ -184,12 +182,11 @@ const convertColorsInString = (str: string): string => {
 export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, onSubmitComplete }) => {
   const [signatureName, setSignatureName] = useState(state.clientInfo.contactName || '');
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
-  const [typedSignature, setTypedSignature] = useState('');
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [showEmailInstructions, setShowEmailInstructions] = useState(false);
   const [generatedRefNo, setGeneratedRefNo] = useState('');
-  const [copiedText, setCopiedText] = useState(false);
   const [submitStatus, setSubmitStatus] = useState('');
   
   const handlePrint = () => {
@@ -209,11 +206,9 @@ export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, o
 
     setErrorMsg('');
     setIsSubmitting(true);
-    setSubmitStatus('Initializing secure submission...');
+    setSubmitStatus('Preparing document for print...');
 
     const generatedRef = `HW-INT-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
-    const entityName = state.clientInfo.entityName || "New Entity";
-    const subject = `Holdstock & Watson Client Onboarding [REF: ${generatedRef}] - ${entityName}`;
 
     // Update state signatures directly before capturing so they show up on the paper sheet PDF
     state.signatures.clientName = signatureName;
@@ -221,58 +216,14 @@ export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, o
     state.signatures.acknowledgedTerms = agreedToPrivacy;
 
     try {
-      // 1. Check if Supabase credentials are configured in the environment variables
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-      const useSupabase = supabaseUrl && 
-                          supabaseUrl !== "https://your-project-id.supabase.co" && 
-                          supabaseUrl.trim() !== "" &&
-                          supabaseAnonKey && 
-                          supabaseAnonKey.trim() !== "";
-
-      if (useSupabase) {
-        setSubmitStatus('Archiving dossier in database...');
-        try {
-          // Save the onboarding application data directly into the Supabase database
-          await supabase
-            .from('submissions')
-            .insert({
-              reference_no: generatedRef,
-              entity_name: state.clientInfo.entityName || "New Entity",
-              client_email: state.clientInfo.emailAddress,
-              form_data: state,
-              created_at: new Date().toISOString()
-            });
-          console.log('Record successfully archived in Supabase database.');
-        } catch (dbErr) {
-          console.warn('Non-blocking Supabase archive error:', dbErr);
-        }
-      } else {
-        // If local preview, try local express backend, but ignore failure if it returns 405 (like on static Github Pages)
-        if (!window.location.hostname.endsWith('github.io')) {
-          setSubmitStatus('Transmitting data to backend server...');
-          try {
-            await fetch('api/submit-onboarding', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ state, referenceNo: generatedRef }),
-            });
-          } catch (localErr) {
-            console.log('Local backend fallback error (ignored on static environments):', localErr);
-          }
-        }
-      }
-
-      // 2. Open print dialog for vector-quality print/save PDF
+      // 1. Open print dialog for vector-quality print/save PDF
       setSubmitStatus('Opening print dialogue...');
       // Wait a tiny moment for DOM to paint the updated signatures
       await new Promise((resolve) => setTimeout(resolve, 500));
       
       window.print();
 
-      // 3. Open beautiful manual email instruction overlay popup instead of failing on email delivery
+      // 2. Open beautiful manual email instruction overlay popup
       setGeneratedRefNo(generatedRef);
       setShowEmailInstructions(true);
       setIsSubmitting(false);
@@ -541,19 +492,6 @@ export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, o
               </p>
             </div>
 
-            {/* Section 5: Automated Email Transmission Service */}
-            <div className="border-t border-slate-200 pt-4 space-y-2 print:break-inside-avoid">
-              <h3 className="text-xs font-bold text-brand uppercase tracking-wider border-l-2 border-accent pl-2 flex items-center gap-2">
-                <Lock className="w-3.5 h-3.5 text-accent" />
-                6. Automated Email Transmission Service
-              </h3>
-              <p className="text-[11px] text-slate-650 leading-relaxed">
-                Upon submitting this dossier, our automated server system will transmit a digital transcript of the completed form directly to your email address (<strong className="text-brand">{state.clientInfo.emailAddress || 'Not entered'}</strong>).
-              </p>
-              <p className="text-[11px] text-slate-650 leading-relaxed">
-                In addition, a secure compliance-quality notification copy will be automatically archived with the practice at <strong className="text-brand font-bold">eugenekoenn@gmail.com</strong>.
-              </p>
-            </div>
 
             {/* Signature Line Area */}
             <div className="border-t border-slate-200 pt-4 grid grid-cols-2 gap-4">
@@ -590,24 +528,11 @@ export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, o
                     value={signatureName}
                     onChange={(e) => {
                       setSignatureName(e.target.value);
-                      setTypedSignature(e.target.value);
                     }}
                     placeholder="Type your full name to sign"
                     className="w-full bg-slate-50/40 border border-slate-200 text-slate-900 text-xs rounded-md focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent p-2 outline-none font-bold placeholder:font-normal transition"
                   />
                 </div>
-
-                {typedSignature && (
-                  <div className="bg-accent-light p-3 rounded-md border border-dashed border-accent text-center select-none animate-fade-in shadow-xs">
-                    <span className="text-brand text-[9px] uppercase font-bold block mb-0.5 tracking-wider">Generated Electronic Stamp</span>
-                    <span className="font-serif italic text-xl text-brand tracking-wide block py-0.5">
-                      {typedSignature}
-                    </span>
-                    <span className="text-[9px] text-slate-500 block mt-0.5">
-                      Date signed: {new Date().toLocaleDateString('en-ZA')} • Secured Onboarding Stamp
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
           </div>
@@ -662,83 +587,31 @@ export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, o
       {/* Manual Email Transmission Overlay Instructions Modal */}
       {showEmailInstructions && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-xs animate-fade-in">
-          <div className="bg-white border border-slate-200 rounded-lg shadow-2xl max-w-lg w-full overflow-hidden relative animate-scale-up">
-            {/* Top gold brand accent bar */}
+          <div className="bg-white border border-slate-200 rounded-lg shadow-2xl max-w-sm w-full overflow-hidden relative animate-scale-up">
+            {/* Top brand accent bar */}
             <div className="h-1.5 bg-brand" />
             
             <div className="p-6 md:p-8 space-y-5 text-center">
-              {/* Dynamic bounce icon */}
-              <div className="w-14 h-14 bg-accent-light border border-accent-border text-brand rounded-full flex items-center justify-center mx-auto shadow-inner relative">
-                <Download className="w-7 h-7 text-accent-dark animate-bounce" />
+              {/* Check icon */}
+              <div className="w-14 h-14 bg-accent-light border border-accent-border text-accent-dark rounded-full flex items-center justify-center mx-auto shadow-inner relative">
+                <Check className="w-7 h-7" />
               </div>
 
               <div className="space-y-1.5">
-                <span className="text-[10px] text-accent-dark font-extrabold tracking-wider uppercase">
-                  PDF Generated &amp; Saved
-                </span>
                 <h3 className="text-lg font-extrabold text-brand tracking-tight">
                   Form Dossier Compiled Successfully!
                 </h3>
-                <p className="text-xs text-slate-600 leading-relaxed max-w-sm mx-auto">
-                  To complete your onboarding, please email the downloaded PDF file directly to our client admissions partner:
+                <p className="text-[10px] text-slate-500">
+                  Your unique reference number is: <strong className="font-mono text-slate-800">{generatedRefNo}</strong>
                 </p>
               </div>
 
-              {/* Recipient box */}
-              <div className="bg-slate-50 border border-slate-200 rounded-md p-4 space-y-2.5 max-w-sm mx-auto">
-                <div className="flex flex-col items-center justify-center">
-                  <span className="text-[9px] text-slate-400 uppercase font-extrabold tracking-wider mb-1">Email Recipient:</span>
-                  <span className="text-sm font-mono font-bold text-brand bg-white px-3.5 py-1.5 rounded border border-slate-200 shadow-xs select-all">
-                    eugene@khfs.co.za
-                  </span>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard.writeText('eugene@khfs.co.za');
-                    setCopiedText(true);
-                    setTimeout(() => setCopiedText(false), 2000);
-                  }}
-                  className="mx-auto text-[10px] text-accent hover:text-accent-dark font-extrabold uppercase tracking-wider flex items-center gap-1.5 transition cursor-pointer"
-                >
-                  {copiedText ? (
-                    <>
-                      <Check className="w-3.5 h-3.5" />
-                      <span>Copied Email!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Mail className="w-3.5 h-3.5" />
-                      <span>Copy Email Address</span>
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {/* Reference badge */}
-              <p className="text-[10px] text-slate-500">
-                Your unique reference number is: <strong className="font-mono text-slate-800">{generatedRefNo}</strong>
-              </p>
-
               {/* Action row */}
-              <div className="flex flex-col sm:flex-row gap-2.5 pt-3 border-t border-slate-100">
+              <div className="pt-3 border-t border-slate-100">
                 <button
                   type="button"
-                  onClick={() => window.print()}
-                  className="sm:flex-1 border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs uppercase tracking-wider px-3.5 py-2.5 rounded-md transition flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <Printer className="w-4 h-4 text-slate-500" />
-                  <span>Print / Save PDF</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowEmailInstructions(false);
-                    onSubmitComplete(generatedRefNo);
-                  }}
-                  className="sm:flex-1 bg-brand hover:bg-brand-hover text-white font-bold text-xs uppercase tracking-wider px-3.5 py-2.5 rounded-md transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                  onClick={() => setShowEmailInstructions(false)}
+                  className="w-full bg-brand hover:bg-brand-hover text-white font-bold text-xs uppercase tracking-wider px-3.5 py-2.5 rounded-md transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <Check className="w-4 h-4" />
                   <span>Proceed to Finish</span>
