@@ -43,6 +43,7 @@ const INITIAL_SERVICES_INFO: RequiredServices = {
   emp201Returns: false,
   emp501Returns: false,
   cipcAnnualReturns: false,
+  beneficialOwnershipTrusts: false,
   monthlyRetainer: 'NO'
 };
 
@@ -151,13 +152,12 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50/60 flex flex-col font-sans text-slate-900 selection:bg-slate-200 selection:text-slate-900">
-      
+
       {/* Top Advisory Banner */}
       <div className="bg-slate-950 text-white py-1.5 px-4 text-center text-[10px] md:text-xs font-semibold tracking-wide uppercase flex items-center justify-center gap-1.5 select-none print:hidden">
-        <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
-        <span>Official Secure Onboarding Portal</span>
+        <ShieldCheck className="w-4 h-4 text-slate-400" />
+        <span>Holdstock and Watson Client Onboarding Portal</span>
         <span className="text-slate-600">•</span>
-        <span className="text-slate-400">POPIA Compliant Secure Channel</span>
       </div>
 
       {/* Header with Nav stepper */}
@@ -172,7 +172,7 @@ export default function App() {
 
       {/* Main Content Stage */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-5 lg:px-6 py-4">
-        
+
         {/* Draft cache indicator banner */}
         {loadedFromCache && !referenceNumber && (
           <div className="mb-4 bg-slate-100 border border-slate-200 text-slate-800 px-3 py-1.5 rounded-md text-xs flex justify-between items-center print:hidden">
@@ -207,7 +207,7 @@ export default function App() {
                   onNext={() => setCurrentStep(2)}
                 />
               )}
-              
+
               {currentStep === 2 && (
                 <ServicesSelector
                   services={formState.services}
@@ -242,7 +242,7 @@ export default function App() {
       {/* Interactive client care support footer */}
       <footer className="bg-white border-t border-slate-200 py-4 mt-8 print:hidden select-none">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-slate-500 font-medium">
-          
+
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-slate-800 animate-pulse" />
             <span className="font-bold text-slate-800">Holdstock &amp; Watson Onboarding Desk</span>

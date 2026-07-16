@@ -76,6 +76,7 @@ export interface RequiredServices {
   emp201Returns: boolean;
   emp501Returns: boolean;
   cipcAnnualReturns: boolean;
+  beneficialOwnershipTrusts: boolean;
   monthlyRetainer: 'YES' | 'NO';
 }
 

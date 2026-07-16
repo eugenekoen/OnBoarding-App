@@ -250,6 +250,7 @@ export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, o
       { key: 'annualAudit', label: 'Annual Audit' },
       { key: 'managementAccounts', label: 'Management Accounts' },
       { key: 'monthlyBooks', label: 'Monthly Books' },
+      { key: 'beneficialOwnershipTrusts', label: 'Beneficial Ownership Submission - Trusts' },
     ] as const;
 
     return servicesMap.filter(s => !!state.services[s.key]);

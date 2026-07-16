@@ -12,7 +12,7 @@ interface ServicesSelectorProps {
 interface ServiceMetaData {
   key: keyof Omit<RequiredServices, 'monthlyRetainer'>;
   label: string;
-  category: 'Tax & Company Compliance' | 'Payroll & Employee Services' | 'Financial & Auditing';
+  category: 'Tax & Company Compliance' | 'Payroll & Employee Services' | 'Financial & Auditing' | 'Beneficial Ownership';
   description: string;
   hint: string;
 }
@@ -30,14 +30,14 @@ const SERVICES_METADATA: ServiceMetaData[] = [
     label: 'IRP6 (Prov) Returns',
     category: 'Tax & Company Compliance',
     description: 'Provisional Tax returns (1st & 2nd period) to declare estimated taxable income mid-year.',
-    hint: 'Required for all companies and individuals earning non-salary income from multiple sources.'
+    hint: 'Required for all entities and individuals earning salary income from multiple sources.'
   },
   {
     key: 'vat201Returns',
     label: 'VAT 201 Returns',
     category: 'Tax & Company Compliance',
     description: 'Bi-monthly or monthly VAT calculations and submissions to SARS.',
-    hint: 'Compulsory when vatable taxable turnover exceeds or is likely to exceed R1 million in 12 months.'
+    hint: 'Compulsory when vatable taxable turnover exceeds or is likely to exceed R2.3 million in 12 months.'
   },
   {
     key: 'cipcAnnualReturns',
@@ -101,6 +101,13 @@ const SERVICES_METADATA: ServiceMetaData[] = [
     category: 'Financial & Auditing',
     description: 'Comprehensive day-to-day transaction recording, bank reconciliations, and trial balance updates.',
     hint: 'Highly recommended if VAT returns are submitted and no internal accounting system exists.'
+  },
+  {
+    key: 'beneficialOwnershipTrusts',
+    label: 'Beneficial Ownership Submission - Trusts',
+    category: 'Beneficial Ownership',
+    description: 'Submission of Beneficial Ownership Registers for Trusts to the Department of Justice & Constitutional Development when there are changes to beneficial owners of trusts.',
+    hint: 'Compulsory annual or change-based reporting for all registered trusts to maintain Master\'s Office compliance.'
   }
 ];
 
@@ -127,7 +134,7 @@ export const ServicesSelector: React.FC<ServicesSelectorProps> = ({ services, on
     onNext();
   };
 
-  const categories = ['Tax & Company Compliance', 'Payroll & Employee Services', 'Financial & Auditing'] as const;  return (
+  const categories = ['Tax & Company Compliance', 'Payroll & Employee Services', 'Financial & Auditing', 'Beneficial Ownership'] as const; return (
     <div className="space-y-5 animate-fade-in">
       <div className="bg-accent-light border border-accent-border border-l-4 border-accent p-4 rounded-r-md">
         <div className="flex gap-3">
@@ -142,15 +149,22 @@ export const ServicesSelector: React.FC<ServicesSelectorProps> = ({ services, on
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        
+
         {/* Render Services grouped by Category */}
         {categories.map((cat) => {
           const catServices = SERVICES_METADATA.filter(s => s.category === cat);
           return (
             <div key={cat} className="bg-white rounded-md p-5 border border-slate-200 shadow-xs space-y-4">
-              <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5">
-                <FileText className="w-5 h-5 text-brand" />
-                <h3 className="text-sm font-bold tracking-wide text-brand uppercase">{cat}</h3>
+              <div className="border-b border-slate-100 pb-2.5 space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-brand" />
+                  <h3 className="text-sm font-bold tracking-wide text-brand uppercase">{cat}</h3>
+                </div>
+                {cat === 'Beneficial Ownership' && (
+                  <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                    Please note that if we are required to submit annual tax returns for the entity, we will require that you provide us beneficial ownership details for the entity, as this is required for us to provide during the tax return submission process. The same applies to CIPC annual returns.
+                  </p>
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -160,11 +174,10 @@ export const ServicesSelector: React.FC<ServicesSelectorProps> = ({ services, on
                     <div
                       key={service.key}
                       onClick={() => handleCheckboxChange(service.key)}
-                      className={`group p-4 rounded-md border transition-all duration-200 cursor-pointer select-none flex flex-col justify-between ${
-                        isChecked
-                          ? 'border-accent bg-accent-light/30 shadow-xs ring-2 ring-accent/5'
-                          : 'border-slate-200 hover:border-accent bg-slate-50/10'
-                      }`}
+                      className={`group p-4 rounded-md border transition-all duration-200 cursor-pointer select-none flex flex-col justify-between ${isChecked
+                        ? 'border-accent bg-accent-light/30 shadow-xs ring-2 ring-accent/5'
+                        : 'border-slate-200 hover:border-accent bg-slate-50/10'
+                        }`}
                     >
                       <div>
                         <div className="flex items-start justify-between gap-3">
@@ -172,11 +185,10 @@ export const ServicesSelector: React.FC<ServicesSelectorProps> = ({ services, on
                             {service.label}
                           </span>
                           <div
-                            className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-all ${
-                              isChecked
-                                ? 'bg-accent border-accent text-white'
-                                : 'border-slate-300 bg-white group-hover:border-accent'
-                            }`}
+                            className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-all ${isChecked
+                              ? 'bg-accent border-accent text-white'
+                              : 'border-slate-300 bg-white group-hover:border-accent'
+                              }`}
                           >
                             {isChecked && (
                               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
@@ -225,22 +237,20 @@ export const ServicesSelector: React.FC<ServicesSelectorProps> = ({ services, on
               <button
                 type="button"
                 onClick={() => handleRetainerChange('YES')}
-                className={`px-4.5 py-2 text-xs font-bold uppercase rounded-md border tracking-widest transition cursor-pointer ${
-                  services.monthlyRetainer === 'YES'
-                    ? 'bg-brand border-brand text-white shadow-sm'
-                    : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
-                }`}
+                className={`px-4.5 py-2 text-xs font-bold uppercase rounded-md border tracking-widest transition cursor-pointer ${services.monthlyRetainer === 'YES'
+                  ? 'bg-brand border-brand text-white shadow-sm'
+                  : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+                  }`}
               >
                 YES
               </button>
               <button
                 type="button"
                 onClick={() => handleRetainerChange('NO')}
-                className={`px-4.5 py-2 text-xs font-bold uppercase rounded-md border tracking-widest transition cursor-pointer ${
-                  services.monthlyRetainer === 'NO'
-                    ? 'bg-accent border-accent text-white shadow-sm'
-                    : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
-                }`}
+                className={`px-4.5 py-2 text-xs font-bold uppercase rounded-md border tracking-widest transition cursor-pointer ${services.monthlyRetainer === 'NO'
+                  ? 'bg-accent border-accent text-white shadow-sm'
+                  : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+                  }`}
               >
                 NO
               </button>
@@ -256,13 +266,12 @@ export const ServicesSelector: React.FC<ServicesSelectorProps> = ({ services, on
 
           <div className="space-y-3.5">
             {/* Box 1 */}
-            <div 
+            <div
               onClick={() => setAcknowledgedGroup1(!acknowledgedGroup1)}
               className="flex gap-3 items-start select-none cursor-pointer group"
             >
-              <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition ${
-                acknowledgedGroup1 ? 'bg-brand border-brand text-white' : 'border-slate-300 bg-white group-hover:border-brand/40'
-              }`}>
+              <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition ${acknowledgedGroup1 ? 'bg-brand border-brand text-white' : 'border-slate-300 bg-white group-hover:border-brand/40'
+                }`}>
                 {acknowledgedGroup1 && (
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -275,13 +284,12 @@ export const ServicesSelector: React.FC<ServicesSelectorProps> = ({ services, on
             </div>
 
             {/* Box 2 */}
-            <div 
+            <div
               onClick={() => setAcknowledgedGroup2(!acknowledgedGroup2)}
               className="flex gap-3 items-start select-none cursor-pointer group"
             >
-              <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition ${
-                acknowledgedGroup2 ? 'bg-brand border-brand text-white' : 'border-slate-300 bg-white group-hover:border-brand/40'
-              }`}>
+              <div className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition ${acknowledgedGroup2 ? 'bg-brand border-brand text-white' : 'border-slate-300 bg-white group-hover:border-brand/40'
+                }`}>
                 {acknowledgedGroup2 && (
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -289,7 +297,7 @@ export const ServicesSelector: React.FC<ServicesSelectorProps> = ({ services, on
                 )}
               </div>
               <p className="text-xs text-slate-700 leading-relaxed">
-                I have read and understand the statutory rules regarding <strong>Employees, Payroll, and VAT</strong> (such as EMP201, COIDA, and the R1 million taxable turnover VAT threshold). I recognize that ensuring active, correct selection is my responsibility.
+                I have read and understand the statutory rules regarding <strong>Employees, Payroll, and VAT</strong> (such as EMP201, COIDA, and the required taxable turnover VAT threshold). I recognize that it is my responsibility to ensure that i have made the correct selection of services to meet my needs.
               </p>
             </div>
           </div>

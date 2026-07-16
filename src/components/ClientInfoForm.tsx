@@ -25,7 +25,7 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
     const { name, value, type } = e.target;
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked;
-      onChange({ 
+      onChange({
         [name]: checked,
         ...(name === 'sameAsRegistered' && checked ? { postalAddress: data.registeredAddress } : {})
       });
@@ -58,7 +58,7 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
       </div>
 
       <form onSubmit={(e) => { e.preventDefault(); onNext(); }} className="space-y-5">
-        
+
         {/* Section 1: Entity Profile */}
         <div className="bg-white rounded-md p-5 border border-slate-200 shadow-xs space-y-4">
           <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5">
@@ -195,7 +195,7 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
                 className="w-full bg-slate-50/40 border border-slate-200 text-slate-900 text-sm rounded-md focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent p-2.5 outline-none transition placeholder:text-slate-400"
               />
               <p className="absolute hidden group-hover:block bg-brand text-white text-xs rounded-md p-2 shadow-lg mt-1 w-64 z-20 left-0 leading-relaxed">
-                Required if your taxable turnover exceeds R1 million or if you have registered voluntarily.
+                Required if your taxable turnover exceeds R2.3 million or if you have registered voluntarily (Minumum Turnover - R120 000).
               </p>
             </div>
 
@@ -378,7 +378,7 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
               <textarea
                 id="registeredAddress"
                 name="registeredAddress"
-                rows={2}
+                rows={5}
                 placeholder="Physical address"
                 value={data.registeredAddress}
                 onChange={handleRegisteredAddressChange}
@@ -402,7 +402,7 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
                     onChange={handleInputChange}
                     className="rounded border-slate-350 text-brand focus:ring-accent h-3.5 w-3.5 cursor-pointer"
                   />
-                  <label htmlFor="sameAsRegistered" className="text-[11px] text-slate-600 font-bold cursor-pointer select-none">
+                  <label htmlFor="sameAsRegistered" className="text-[11px] text-slate-650 font-bold cursor-pointer select-none">
                     Same as Physical
                   </label>
                 </div>
@@ -410,17 +410,16 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
               <textarea
                 id="postalAddress"
                 name="postalAddress"
-                rows={2}
+                rows={5}
                 disabled={data.sameAsRegistered}
                 placeholder="Postal or P.O. Box address"
                 value={data.postalAddress}
                 onChange={handleInputChange}
                 required
-                className={`w-full border text-sm rounded-md p-2.5 outline-none transition resize-none font-sans ${
-                  data.sameAsRegistered 
-                    ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed' 
-                    : 'bg-slate-50/40 border-slate-200 text-slate-900 focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent placeholder:text-slate-400'
-                }`}
+                className={`w-full border text-sm rounded-md p-2.5 outline-none transition resize-none font-sans ${data.sameAsRegistered
+                  ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'
+                  : 'bg-slate-50/40 border-slate-200 text-slate-900 focus:bg-white focus:ring-1 focus:ring-accent focus:border-accent placeholder:text-slate-400'
+                  }`}
               />
             </div>
           </div>
