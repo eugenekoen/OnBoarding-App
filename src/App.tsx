@@ -253,9 +253,9 @@ export default function App() {
               <PhoneCall className="w-3.5 h-3.5 text-slate-400" />
               <span>Durban Office: (031) 324 1900</span>
             </a>
-            <a href="mailto:onboarding@holdstock.co.za" className="flex items-center gap-1 hover:text-slate-800 transition">
+            <a href="mailto:eugene@khfs.co.za" className="flex items-center gap-1 hover:text-slate-800 transition">
               <Mail className="w-3.5 h-3.5 text-slate-400" />
-              <span>onboarding@holdstock.co.za</span>
+              <span>eugene@khfs.co.za</span>
             </a>
           </div>
 
