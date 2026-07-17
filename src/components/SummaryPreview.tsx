@@ -216,14 +216,68 @@ export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, o
     state.signatures.acknowledgedTerms = agreedToPrivacy;
 
     try {
-      // 1. Open print dialog for vector-quality print/save PDF
+      // 1. Transmit details to Google Sheets if the environment URL is provided
+      const googleScriptUrl = import.meta.env.VITE_GOOGLE_SCRIPT_URL;
+      if (googleScriptUrl) {
+        setSubmitStatus('Transmitting data to Google Sheets...');
+        
+        // Flatten and format payload for easy integration with Google Sheets row columns
+        const payload = {
+          referenceNumber: generatedRef,
+          submissionDate: state.signatures.date,
+          entityType: state.clientInfo.entityType || '',
+          entityName: state.clientInfo.entityName || '',
+          entityRegistrationNumber: state.clientInfo.entityRegistrationNumber || '',
+          contactName: state.clientInfo.contactName || '',
+          emailAddress: state.clientInfo.emailAddress || '',
+          cellphoneNumber: state.clientInfo.cellphoneNumber || '',
+          telephoneNumber: state.clientInfo.telephoneNumber || '',
+          registeredAddress: state.clientInfo.registeredAddress || '',
+          postalAddress: state.clientInfo.sameAsRegistered 
+            ? state.clientInfo.registeredAddress 
+            : state.clientInfo.postalAddress || '',
+          financialYearEnd: state.clientInfo.financialYearEnd || '',
+          referredBy: state.clientInfo.referredBy || '',
+          incomeTaxNumber: state.clientInfo.incomeTaxNumber || '',
+          vatNumber: state.clientInfo.vatNumber || '',
+          payeNumber: state.clientInfo.payeNumber || '',
+          uifNumber: state.clientInfo.uifNumber || '',
+          sdlNumber: state.clientInfo.sdlNumber || '',
+          monthlyRetainer: state.services.monthlyRetainer || 'NO',
+          selectedServices: selectedServices.map(s => s.label).join(', '),
+          beneficialOwners: state.beneficialOwners.map(owner => {
+            const name = owner.type === 'Company' ? owner.companyName : owner.fullName;
+            const details = owner.type === 'Individual' ? `ID: ${owner.idNumber}` : 
+                            owner.type === 'NonResident' ? `Passport: ${owner.passportNumber} (${owner.passportCountryOfOrigin})` :
+                            `Reg: ${owner.registrationNumber}`;
+            return `${name} (${owner.type}): ${details}`;
+          }).join('; '),
+          signatureName: signatureName,
+          signatureDate: state.signatures.date
+        };
+
+        // We use mode: 'no-cors' since Google Sheets Web App redirects (302) to another origin
+        // which triggers CORS blocks. 'no-cors' safely lets the request hit the Google Sheet.
+        await fetch(googleScriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        console.warn('VITE_GOOGLE_SCRIPT_URL not configured. Spreadsheet logging skipped.');
+      }
+
+      // 2. Open print dialog for vector-quality print/save PDF
       setSubmitStatus('Opening print dialogue...');
       // Wait a tiny moment for DOM to paint the updated signatures
       await new Promise((resolve) => setTimeout(resolve, 500));
       
       window.print();
 
-      // 2. Open beautiful manual email instruction overlay popup
+      // 3. Open beautiful manual email instruction overlay popup
       setGeneratedRefNo(generatedRef);
       setShowEmailInstructions(true);
       setIsSubmitting(false);
