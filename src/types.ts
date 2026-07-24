@@ -25,6 +25,7 @@ export interface ClientInformation {
   postalAddress: string;
   financialYearEnd: string;
   sameAsRegistered: boolean;
+  fax_number_hp?: string;
 }
 
 export type BeneficialOwnerType = 'Individual' | 'NonResident' | 'Company';

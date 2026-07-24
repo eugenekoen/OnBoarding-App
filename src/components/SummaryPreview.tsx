@@ -195,6 +195,8 @@ export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, o
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     if (!signatureName.trim()) {
       setErrorMsg('Please enter your full name in the authorized sign-off box.');
       return;
@@ -253,19 +255,22 @@ export const SummaryPreview: React.FC<SummaryPreviewProps> = ({ state, onBack, o
             return `${name} (${owner.type}): ${details}`;
           }).join('; '),
           signatureName: signatureName,
-          signatureDate: state.signatures.date
+          signatureDate: state.signatures.date,
+          fax_number_hp: state.clientInfo.fax_number_hp || ''
         };
 
-        // We use mode: 'no-cors' since Google Sheets Web App redirects (302) to another origin
-        // which triggers CORS blocks. 'no-cors' safely lets the request hit the Google Sheet.
-        await fetch(googleScriptUrl, {
+        // Transmit via backend rate-limited endpoint (/api/submit-onboarding)
+        setSubmitStatus('Transmitting data securely...');
+        const apiRes = await fetch('/api/submit-onboarding', {
           method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
+
+        if (!apiRes.ok) {
+          const errData = await apiRes.json().catch(() => ({}));
+          throw new Error(errData.error || `Submission blocked by server (Status ${apiRes.status})`);
+        }
       } else {
         console.warn('VITE_GOOGLE_SCRIPT_URL not configured. Spreadsheet logging skipped.');
       }

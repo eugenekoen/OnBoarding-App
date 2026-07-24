@@ -1,6 +1,6 @@
 import React from 'react';
 import { OnboardingFormState } from '../types';
-import { CheckCircle2, ShieldCheck, Mail, Calendar, Sparkles, Printer, FileText } from 'lucide-react';
+import { CheckCircle2, ShieldCheck, Mail, Sparkles, Printer } from 'lucide-react';
 
 interface SuccessViewProps {
   referenceNo: string;
@@ -37,7 +37,7 @@ export const SuccessView: React.FC<SuccessViewProps> = ({ referenceNo, state, on
               Application Transmitted
             </h2>
             <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
-              Your comprehensive onboarding dossier has been verified and safely transmitted to our compliance &amp; registrations team at Holdstock &amp; Watson Inc.
+              Your comprehensive onboarding dossier has been safely transmitted to our team at Holdstock &amp; Watson Inc. and we will be in contact shortly regarding taking over the selected services requested.
             </p>
           </div>
 
@@ -57,27 +57,11 @@ export const SuccessView: React.FC<SuccessViewProps> = ({ referenceNo, state, on
               What happens next?
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              <div className="flex gap-2.5 items-start">
-                <div className="w-6 h-6 rounded-full bg-accent-light border border-accent-border text-brand flex items-center justify-center shrink-0 font-extrabold text-[11px]">1</div>
-                <div>
-                  <h4 className="font-bold text-brand text-xs uppercase tracking-wide">Compliance Auditing</h4>
-                  <p className="text-slate-650 mt-1 leading-relaxed text-xs">We will check your registered tax details (Income Tax, PAYE, VAT) against SARS databases for instant synchronization.</p>
-                </div>
-              </div>
-
-              <div className="flex gap-2.5 items-start">
-                <div className="w-6 h-6 rounded-full bg-accent-light border border-accent-border text-brand flex items-center justify-center shrink-0 font-extrabold text-[11px]">2</div>
-                <div>
-                  <h4 className="font-bold text-brand text-xs uppercase tracking-wide">Beneficial Ownership</h4>
-                  <p className="text-slate-650 mt-1 leading-relaxed text-xs">Our registration managers will generate statutory CIPC forms if Beneficial Owner changes are required.</p>
-                </div>
-              </div>
-
-              <div className="flex gap-2 items-start col-span-1 md:col-span-2 border-t border-slate-200/80 pt-3">
+            <div className="text-xs">
+              <div className="flex gap-2 items-start">
                 <Mail className="w-4 h-4 text-accent shrink-0 mt-0.5" />
                 <p className="text-slate-700 leading-relaxed text-xs">
-                  A verification email containing your completed form summary and a document upload link (for ID / Passport / Company Reg proof) has been sent to <strong className="text-brand">{state.clientInfo.emailAddress}</strong>.
+                  A verification email containing your completed form summary has been sent to <strong className="text-brand">{state.clientInfo.emailAddress}</strong>.
                 </p>
               </div>
             </div>
@@ -91,14 +75,6 @@ export const SuccessView: React.FC<SuccessViewProps> = ({ referenceNo, state, on
             >
               <Printer className="w-4 h-4" />
               <span>Print Complete Dossier</span>
-            </button>
-
-            <button
-              onClick={onReset}
-              className="border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs uppercase tracking-wider px-5 py-3 rounded-md transition flex items-center gap-2 cursor-pointer"
-            >
-              <FileText className="w-4 h-4 text-slate-500" />
-              <span>Submit New Client Form</span>
             </button>
           </div>
 

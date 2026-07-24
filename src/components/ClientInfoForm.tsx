@@ -59,6 +59,18 @@ export const ClientInfoForm: React.FC<ClientInfoFormProps> = ({ data, onChange, 
 
       <form onSubmit={(e) => { e.preventDefault(); onNext(); }} className="space-y-5">
 
+        {/* Hidden Honeypot Field (Bot Trap - Invisible to humans) */}
+        <div style={{ display: 'none', position: 'absolute', left: '-9999px' }} aria-hidden="true">
+          <input
+            type="text"
+            name="fax_number_hp"
+            tabIndex={-1}
+            autoComplete="off"
+            value={data.fax_number_hp || ''}
+            onChange={handleInputChange}
+          />
+        </div>
+
         {/* Section 1: Entity Profile */}
         <div className="bg-white rounded-md p-5 border border-slate-200 shadow-xs space-y-4">
           <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5">
